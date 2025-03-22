@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id               Int          @id @default(autoincrement())
+  name             String
+  profilePictureUrl String?     @map("profile_picture_url")
+  profession       String?
+  batch            String?
+  about            String?
+  phoneNumber      String?      @map("phone_number")
+  email            String       @unique
+  linkedinUrl      String?      @map("linkedin_url")
+  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt        DateTime     @default(now()) @map("updated_at") @db.Timestamptz()
+  
+  education        Education[]
+  experience       Experience[]
+  skills           Skill[]
+  projects         Project[]
+
+  @@map("students")
+}
+
+model Education {
+  id            Int       @id @default(autoincrement())
+  studentId     Int       @map("student_id")
+  institution   String
+  degree        String
+  fieldOfStudy  String?   @map("field_of_study")
+  startDate     DateTime? @map("start_date") @db.Date
+  endDate       DateTime? @map("end_date") @db.Date
+  description   String?
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt     DateTime  @default(now()) @map("updated_at") @db.Timestamptz()
+  
+  student       Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("education")
+}
+
+model Experience {
+  id          Int       @id @default(autoincrement())
+  studentId   Int       @map("student_id")
+  company     String
+  position    String
+  startDate   DateTime? @map("start_date") @db.Date
+  endDate     DateTime? @map("end_date") @db.Date
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime  @default(now()) @map("updated_at") @db.Timestamptz()
+  
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("experience")
+}
+
+model Skill {
+  id        Int      @id @default(autoincrement())
+  studentId Int      @map("student_id")
+  name      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz()
+  
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("skills")
+}
+
+model Project {
+  id          Int           @id @default(autoincrement())
+  studentId   Int           @map("student_id")
+  name        String
+  description String?
+  githubUrl   String?       @map("github_url")
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime      @default(now()) @map("updated_at") @db.Timestamptz()
+  
+  student     Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  images      ProjectImage[]
+
+  @@map("projects")
+}
+
+model ProjectImage {
+  id        Int      @id @default(autoincrement())
+  projectId Int      @map("project_id")
+  imageUrl  String   @map("image_url")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz()
+  
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_images")
+}
+
