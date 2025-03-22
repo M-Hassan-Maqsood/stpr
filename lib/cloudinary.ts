@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { CldUploadWidget } from "next-cloudinary"
 
 type CloudinaryUploadWidgetProps = {
@@ -12,7 +11,7 @@ type CloudinaryUploadWidgetProps = {
 export function CloudinaryUploadWidget({ onUpload, children }: CloudinaryUploadWidgetProps) {
   return (
     <CldUploadWidget
-      uploadPreset="student_profiles"
+      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "student_profiles"}
       options={{
         maxFiles: 1,
         sources: ["local", "url", "camera"],
